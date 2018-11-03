@@ -1,0 +1,28 @@
+.auth {
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.auth .logo {
+  margin: auto;
+  margin-top: 2em;
+  margin-bottom: 2em;
+  width: 100px;
+  height: 100px;
+  border: 1px dotted lightblue;
+}
+
+.auth label input {
+  display: block;
+  margin-bottom: 0.5em;
+}
+
+.auth.error label input {
+  background-color:rgba(255, 0, 0, 0.253);
+}
+
+.auth button {
+  margin-top: 0.5em;
+  height: 2em;
+}

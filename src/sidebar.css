@@ -1,0 +1,24 @@
+.sidebar {
+  width: 20em;
+  border-left: var(--border-color) 1px solid;
+  overflow: auto;
+}
+
+.sidebar .header {
+  text-align: center;
+}
+
+.sidebar .event {
+  border-bottom: var(--border-color) 1px solid;
+  padding: 0.5em;
+}
+
+.sidebar .event .eventTitle {
+  padding-left: 0.5em;
+  background-color: var(--bg-color-secondary);
+}
+
+.sidebar .event .organizer, .sidebar .event .levels, .sidebar .event .judges {
+  padding-left: 1em;
+  font-size: 75%;
+}
