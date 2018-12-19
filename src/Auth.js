@@ -47,10 +47,12 @@ export default class AuthForm extends React.Component {
     }
     render() {
         return (<div className={this.state.error ? "auth error" : "auth"}>
-            <div className="logo">Logo</div>
-            <label>Käyttäjätunnus: <input name="username" onChange={this.handleUsername} value={this.state.username}></input></label>
-            <label>Salasana: <input type="password" name="password" onChange={this.handlePassword} value={this.state.password}></input></label>
-            <button onClick={this.doAuth} disabled={this.state.loading}>Kirjaudu</button>
+            <form onSubmit={this.doAuth}>
+                <div className="logo">Logo</div>
+                <label>Käyttäjätunnus: <input name="username" onChange={this.handleUsername} value={this.state.username}></input></label>
+                <label>Salasana: <input type="password" name="password" onChange={this.handlePassword} value={this.state.password}></input></label>
+                <button onClick={this.doAuth} disabled={this.state.loading}>Kirjaudu</button>
+            </form>
         </div>);
     }
 }
