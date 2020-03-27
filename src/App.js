@@ -5,7 +5,6 @@ import './sidebar.css';
 
 import Calendar from './Calendar'
 import Spinner from "./Spinner"
-import Auth from "./Auth"
 
 // import { apiUrl } from "./config"
 const apiUrl = process.env.REACT_APP_APIURL;
@@ -32,11 +31,11 @@ function addOrMergeReservation(prev = [], current) {
   return prev;
 }
 
-async function getMoreData(page = 0, idToken) {
-  const response = await fetch(`${apiUrl}race-applications-management/list?cacheBuster=${Date.now()}&page=${page}&size=100&sort=details.lastRegistrationWeb,desc`,
+async function getMoreData(page = 0, fromDate) {
+  const response = await fetch(`${apiUrl}race-applications?fromDate=${fromDate}`,
     {
       headers: {
-        "Authorization": `Bearer ${idToken}`
+        "Content-Type": `application/json`
       }
     }
   )
@@ -132,13 +131,9 @@ class App extends Component {
   }
 
   getUntilToday = async () => {
-    let page = 0, gotData = true;
     const cutoff = dateFns.addMonths(new Date(), -1);
-    while (!dateFns.isBefore(this.state.firstDateSeen, cutoff) && gotData) {
-      const data = await getMoreData(page++, this.state.idToken);
-      this.processData(data)
-      gotData = data.length > 0;
-    }
+    const data = await getMoreData(0, cutoff);
+    this.processData(data);
   }
 
   handleAuth = async (idToken) => {
@@ -147,14 +142,6 @@ class App extends Component {
 
     await this.getUntilToday();
     this.setState({ loading: false })
-  }
-
-  // componentDidMount() {
-  //   Check sessionStorage for token?
-  // }
-
-  renderAuth = () => {
-    return <Auth onAuth={this.handleAuth}></Auth>
   }
 
   renderContent = () => {
@@ -177,7 +164,7 @@ class App extends Component {
 
   render() {
     return (<div className="App">
-      {this.state.idToken ? this.renderContent() : this.renderAuth()}
+      {this.renderContent()}
     </div>);
   }
 }
