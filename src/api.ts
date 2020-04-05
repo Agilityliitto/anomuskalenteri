@@ -1,70 +1,11 @@
 import * as dateFns from "date-fns";
+import { ApplicationState, Race, Track } from "./state/raceState";
 
 
 const apiUrl = process.env.REACT_APP_APIURL;
 
 console.log(apiUrl);
 
-export enum ApplicationState {
-    CLUB_DRAFT = "CLUB_DRAFT",
-    CLUB_DONE = "CLUB_DONE",
-    SAGI_IN_PROGRESS = "SAGI_IN_PROGRESS",
-    SAGI_APPROVED = "SAGI_APPROVED"
-}
-
-type ADate = [number, number, number];
-
-interface Location {
-    name: string;
-    street: string;
-    zip: string | null;
-    postOffice: string | null;
-    details: string;
-}
-
-interface Person {
-    name: string;
-}
-
-interface ContactPerson {
-    contactDetails: {
-        name: string;
-    }
-}
-
-export interface Track {
-    startDate?: ADate;
-    trackDate: Date;
-    mainJudge: ContactPerson | null;
-    reserveJudge: ContactPerson | null;
-    sizeClass: {
-        code: string;
-        name: string;
-    };
-    levelClass: {
-        code: string;
-        name: string;
-    }
-}
-
-export interface Race {
-    applicationState: ApplicationState;
-    raceSequence: string;
-    location: Location;
-    official: Person;
-
-    details: {
-        description: string | null;
-        organizer: {
-            name: string;
-            abbreviation: string;
-        };
-        eventName: string;
-        championshipRace: boolean;
-    }
-
-    tracks: Track[];
-}
 
 export const REQUEST_ERROR = Symbol("REQUEST_ERROR");
 export const DATA_ERROR = Symbol("DATA_ERROR");
@@ -107,7 +48,7 @@ async function apiRequest({
             return REQUEST_ERROR;
         }
         try {
-            return response.json() as Promise<Race[]>;
+            return response.json() as Promise<APIRace[]>;
         } catch (e) {
             console.log(e);
             return DATA_ERROR;
@@ -118,11 +59,21 @@ async function apiRequest({
     }
 }
 
+type ADate = [number, number, number];
+interface APITrack extends Track {
+    startDate: ADate
+}
+
+interface APIRace extends Race {
+    tracks: APITrack[];
+};
+
 export class RaceDataAPI {
-    private races: Race[] = [];
+    // private races: Race[] = [];
     private error?: typeof DATA_ERROR | typeof REQUEST_ERROR;
 
-    private async fetchRacesForDate(date: Date) {
+    public async fetchRacesForDate(date: Date) {
+        const races: Race[] = [];
         const toDate = dateFns.lastDayOfMonth(date);
         const fromDate = dateFns.startOfMonth(date);
         let response = await apiRequest({ fromDate, toDate });
@@ -131,7 +82,7 @@ export class RaceDataAPI {
             this.error = response;
             return;
         }
-        this.races.push(...response.map(race => ({
+        races.push(...response.map(race => ({
             ...race, tracks: race.tracks.map(({ startDate: [y, m, d] = [0, 0, 0], ...rest }) => ({
                 ...rest,
                 trackDate: new Date(y, m - 1, d)
@@ -147,18 +98,21 @@ export class RaceDataAPI {
                     this.error = response;
                     return;
                 }
-                this.races.push(...response);
+                races.push(...response);
             }
         }
+
+        return races;
     }
 
     public hasError() { return this.error; }
 
-    public async getRacesForDate(date: Date) {
-        await this.fetchRacesForDate(date);
-        return this.races.filter(race =>
-            race.tracks.some(({ trackDate }) =>
-                dateFns.isSameMonth(trackDate, date)
-            ));
-    }
+    // public async getRacesForDate(date: Date) {
+    //     // TODO: Return immediately if
+    //     await this.fetchRacesForDate(date);
+    //     return this.races.filter(race =>
+    //         race.tracks.some(({ trackDate }) =>
+    //             dateFns.isSameMonth(trackDate, date)
+    //         ));
+    // }
 }

@@ -5,7 +5,7 @@ import 'antd/dist/antd.css';
 
 import { Card, Tag, Tooltip, List } from "antd";
 import { ExclamationCircleOutlined, QuestionOutlined, QuestionCircleOutlined, CheckOutlined, CheckCircleOutlined } from '@ant-design/icons';
-import { Race, ApplicationState, Track } from './api';
+import { Race, ApplicationState, Track } from './state/raceState';
 
 const RaceListLine: React.FC<{ race: Race }> = ({ race }) => {
   const icon = race.details.championshipRace ? (<ExclamationCircleOutlined style={{ 'marginRight': '5px' }} />) : null;

@@ -10,9 +10,9 @@
     "antd": "^4.0.4",
     "date-fns": "^2.11.1",
     "overmind": "^23.0.1",
+    "overmind-react": "^24.0.1",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
-    "react-overmind": "^1.0.0-1533059066486",
     "react-scripts": "^3.4.1",
     "typescript": "^3.8.3"
   },
