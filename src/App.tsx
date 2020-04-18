@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Provider } from "overmind-react";
-import { format, addMonths } from "date-fns";
+import { format, addMonths, getMonth, getYear } from "date-fns";
 import { fi as locale } from "date-fns/locale";
 import "./App.css";
 
@@ -8,47 +8,79 @@ import { MonthListView } from "./RaceListView";
 
 import { DatePicker } from "./DatePicker";
 import { overmind, useOvermind } from "./state/state";
-import { Spin } from "antd";
+import { Button } from "antd";
+import { DoubleLeftOutlined, DoubleRightOutlined } from "@ant-design/icons";
 
+const TODAY = new Date();
 const DateInput: React.FC = () => {
   const { state, actions } = useOvermind();
   return (
     <div style={{ alignSelf: "center" }}>
+      <Button onClick={() => actions.scrollMonth(-1)}>
+        <DoubleLeftOutlined />
+      </Button>
       <DatePicker
         picker="month"
         onChange={(mDate) => mDate && actions.setSelectedDate(mDate)}
         value={state.selectedDate}
+        defaultValue={TODAY}
+        allowClear={false}
       />
+      <Button onClick={() => actions.scrollMonth(1)}>
+        <DoubleRightOutlined />
+      </Button>
     </div>
   );
 };
 
-const TrackLane: React.FC<{ monthOffset?: number }> = ({ monthOffset = 0 }) => {
+const MonthHeader: React.FC<{ month: number; year: number }> = ({
+  month,
+  year,
+}) => {
+  const trackDate = new Date(year, month);
+  return (
+    <h3 style={{ textAlign: "center" }}>
+      {format(trackDate, "LLLL yyyy", { locale })}
+    </h3>
+  );
+};
+
+const TrackLane: React.FC<{ month: number; year: number }> = ({
+  month,
+  year,
+}) => {
+  return (
+    <div style={{ flex: 1 }}>
+      <MonthHeader month={month} year={year} />
+      <MonthListView month={month} year={year} />
+    </div>
+  );
+};
+
+// TODO: Why does it not work if the component is called "TrackLanes"
+const TrackLanes: React.FC = () => {
   const {
     state: { selectedDate },
   } = useOvermind();
 
-  const trackDate = addMonths(selectedDate, monthOffset);
   return (
-    <div style={{ flex: 1 }}>
-      <h3 style={{ textAlign: "center" }}>
-        {format(trackDate, "LLLL yyyy", { locale })}
-      </h3>
-      <MonthListView date={trackDate} />
+    <div style={{ display: "flex", flex: 1 }}>
+      <TrackLane
+        key={format(addMonths(selectedDate, -1), "yyyyMM")}
+        month={getMonth(addMonths(selectedDate, -1))}
+        year={getYear(addMonths(selectedDate, -1))}
+      />
+      <TrackLane
+        key={format(selectedDate, "yyyyMM")}
+        month={getMonth(selectedDate)}
+        year={getYear(selectedDate)}
+      />
+      <TrackLane
+        key={format(addMonths(selectedDate, 1), "yyyyMM")}
+        month={getMonth(addMonths(selectedDate, 1))}
+        year={getYear(addMonths(selectedDate, 1))}
+      />
     </div>
-  );
-};
-
-const LoadingStatus: React.FC = () => {
-  const {
-    state: { fetching },
-  } = useOvermind();
-  return (
-    <Spin
-      spinning={fetching}
-      size="large"
-      style={{ position: "absolute", width: "100%", top: "100px" }}
-    />
   );
 };
 
@@ -56,12 +88,7 @@ export const App: React.FC = () => (
   <div className="App">
     <Provider value={overmind}>
       <DateInput />
-      <LoadingStatus />
-      <div style={{ display: "flex", flex: 1 }}>
-        <TrackLane monthOffset={-1} />
-        <TrackLane />
-        <TrackLane monthOffset={1} />
-      </div>
+      <TrackLanes />
     </Provider>
   </div>
 );
