@@ -10,6 +10,7 @@ import { DatePicker } from "./DatePicker";
 import { overmind, useOvermind } from "./state/state";
 import { Button } from "antd";
 import { DoubleLeftOutlined, DoubleRightOutlined } from "@ant-design/icons";
+import { cap } from "./utils";
 
 const TODAY = new Date();
 const DateInput: React.FC = () => {
@@ -40,7 +41,7 @@ const MonthHeader: React.FC<{ month: number; year: number }> = ({
   const trackDate = new Date(year, month);
   return (
     <h3 style={{ textAlign: "center" }}>
-      {format(trackDate, "LLLL yyyy", { locale })}
+      {cap(format(trackDate, "LLLL yyyy", { locale }))}
     </h3>
   );
 };
@@ -49,11 +50,14 @@ const TrackLane: React.FC<{ month: number; year: number }> = ({
   month,
   year,
 }) => {
-  return (
-    <div style={{ flex: 1 }}>
-      <MonthHeader month={month} year={year} />
-      <MonthListView month={month} year={year} />
-    </div>
+  return React.useMemo(
+    () => (
+      <div style={{ flex: 1 }}>
+        <MonthHeader month={month} year={year} />
+        <MonthListView month={month} year={year} />
+      </div>
+    ),
+    [year, month]
   );
 };
 

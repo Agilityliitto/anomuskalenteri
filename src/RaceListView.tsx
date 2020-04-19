@@ -7,6 +7,28 @@ import { Tag, List, Spin } from "antd";
 import { AccumulatedTrackLevelsEntry } from "./data/RaceDataStore";
 import { raceData } from "./data";
 import { Club } from "./data/types";
+import { cap } from "./utils";
+
+/**
+ * Wraps an async function into a function that returns a cancellation function.
+ * When the cancellation function is called, a promise given to the parameter function is rejected.
+ *
+ * const fn = cancellable(async (c) => {
+ *  await Promise.race([ fetchData(), c ]);
+ * })
+ *
+ * const cancel = fn();
+ *
+ * cancel(); -> c rejected
+ *
+ * @param fn Function to wrap, (c: Promise) => ...
+ */
+const cancellable = (fn: (c: Promise<never>) => Promise<any>) => () => {
+  let cancel: (reason: string) => void;
+  const cancelPromise = new Promise<never>((_, c) => (cancel = c));
+  fn(cancelPromise);
+  return () => cancel("Cancelled");
+};
 
 const renderPill = (tag: string, count: number, i: number) => (
   <div key={i}>
@@ -20,15 +42,26 @@ const ClubDayTracks: React.FC<{ clubId: string; date: Date }> = ({
   clubId,
   date,
 }) => {
-  const [tracks, setTracks] = useState<AccumulatedTrackLevelsEntry>({});
-  const [club, setClub] = useState<Club>();
-  useEffect(() => {
-    (async () => {
-      const accumulatedTracks = await raceData.getAccumulatedTracks(date);
-      setTracks(accumulatedTracks[clubId] ?? {});
-      setClub(raceData.club(clubId));
-    })();
-  }, [date, clubId]);
+  const initialAT = raceData.getAccumulatedTracksSync(date);
+  const [tracks, setTracks] = useState<AccumulatedTrackLevelsEntry>(
+    initialAT[clubId] ?? {}
+  );
+  const [club, setClub] = useState<Club | undefined>(raceData.club(clubId));
+  useEffect(
+    cancellable(async (c) => {
+      try {
+        const accumulatedTracks = await Promise.race([
+          raceData.getAccumulatedTracks(date),
+          c,
+        ]);
+        setTracks(accumulatedTracks[clubId] ?? {});
+        setClub(raceData.club(clubId));
+      } catch (e) {
+        console.log(e);
+      }
+    }),
+    [date, clubId]
+  );
 
   if (!club) return null;
 
@@ -65,25 +98,36 @@ const DayTracks: React.FC<{ date: number; month: number; year: number }> = ({
   month,
   year,
 }) => {
-  const [clubsForDay, setClubsForDay] = useState<string[]>([]);
   const trackDate = useMemo(() => new Date(year, month, date), [
     year,
     month,
     date,
   ]);
-  useEffect(() => {
-    (async () => {
-      const accumulatedTracks = await raceData.getAccumulatedTracks(trackDate);
-      setClubsForDay(Object.keys(accumulatedTracks ?? {}));
-    })();
-  }, [trackDate]);
+  const initialAT = raceData.getAccumulatedTracksSync(trackDate);
+  const [clubsForDay, setClubsForDay] = useState<string[]>(
+    Object.keys(initialAT)
+  );
+  useEffect(
+    cancellable(async (c) => {
+      try {
+        const accumulatedTracks = await Promise.race([
+          raceData.getAccumulatedTracks(trackDate),
+          c,
+        ]);
+        setClubsForDay(Object.keys(accumulatedTracks ?? {}));
+      } catch (e) {
+        console.log(e);
+      }
+    }),
+    [trackDate]
+  );
 
   if (!isValid(trackDate)) return null;
 
   if (clubsForDay.length)
     return (
       <List
-        header={format(trackDate, "cccc dd.MM.yyyy", { locale })}
+        header={<b>{cap(format(trackDate, "cccc dd.MM.yyyy", { locale }))}</b>}
         bordered
         dataSource={clubsForDay}
         renderItem={(clubId) => (
@@ -94,6 +138,7 @@ const DayTracks: React.FC<{ date: number; month: number; year: number }> = ({
     );
   return null;
 };
+
 const delay = <T extends any>(time: number, value?: T) =>
   new Promise<T>((r) => setTimeout(() => r(value), time));
 export const MonthListView: React.FC<{ month: number; year: number }> = ({
@@ -101,27 +146,39 @@ export const MonthListView: React.FC<{ month: number; year: number }> = ({
   year,
 }) => {
   const [spinning, setSpinning] = useState<boolean>(false);
-  useEffect(() => {
-    (async () => {
-      const date = new Date(year, month);
-      const accumulatedTracks = raceData.getAccumulatedTracks(date);
-      const race = await Promise.race([accumulatedTracks, delay(300, false)]);
-      if (race === false) {
-        setSpinning(true);
-        await accumulatedTracks;
-        setSpinning(false);
+  useEffect(
+    cancellable(async (c) => {
+      try {
+        const date = new Date(year, month);
+        const accumulatedTracks = raceData.getAccumulatedTracks(date);
+        const race = await Promise.race([
+          accumulatedTracks,
+          delay(300, false),
+          c,
+        ]);
+        if (race === false) {
+          setSpinning(true);
+          await Promise.race([accumulatedTracks, c]);
+          setSpinning(false);
+        }
+      } catch (e) {
+        console.log("1", e);
       }
-    })();
-  }, [month, year]);
+    }),
+    [month, year]
+  );
 
-  const _dates = [];
-  for (let i = 1; i <= 31; i++) {
-    _dates.push(<DayTracks year={year} month={month} date={i} key={i} />);
-  }
+  const dates = useMemo(() => {
+    const _dates = [];
+    for (let i = 1; i <= 31; i++) {
+      _dates.push(<DayTracks year={year} month={month} date={i} key={i} />);
+    }
+    return _dates;
+  }, [year, month]);
 
   return (
-    <div style={{ minHeight: "100px" }}>
-      <Spin spinning={spinning}>{_dates}</Spin>
-    </div>
+    <Spin spinning={spinning}>
+      <div style={{ minHeight: "100px" }}>{dates}</div>
+    </Spin>
   );
 };

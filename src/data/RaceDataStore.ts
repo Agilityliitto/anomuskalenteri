@@ -228,6 +228,12 @@ export class RaceDataStore {
     return this.accumulatedTracks[dateKey] ?? {};
   }
 
+  public getAccumulatedTracksSync(date: Date) {
+    if (!isValid(date)) return {};
+    const dateKey = toDateKey(date);
+    return this.accumulatedTracks[dateKey] ?? {};
+  }
+
   public club(clubId: string) {
     return this.clubs[clubId];
   }
