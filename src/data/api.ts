@@ -8,7 +8,7 @@ console.log(apiUrl);
 export const REQUEST_ERROR = Symbol("REQUEST_ERROR");
 export const DATA_ERROR = Symbol("DATA_ERROR");
 
-const PAGE_SIZE = 10;
+const PAGE_SIZE = 100;
 interface RequestParams {
   clubId?: number;
   state?: ApplicationState;

@@ -46,18 +46,19 @@ const MonthHeader: React.FC<{ month: number; year: number }> = ({
   );
 };
 
-const TrackLane: React.FC<{ month: number; year: number }> = ({
-  month,
-  year,
-}) => {
+const TrackLane: React.FC<{
+  month: number;
+  year: number;
+  className?: string;
+}> = ({ month, year, className }) => {
   return React.useMemo(
     () => (
-      <div style={{ flex: 1 }}>
+      <div style={{ flex: 1 }} className={className}>
         <MonthHeader month={month} year={year} />
         <MonthListView month={month} year={year} />
       </div>
     ),
-    [year, month]
+    [year, month, className]
   );
 };
 
@@ -68,8 +69,9 @@ const TrackLanes: React.FC = () => {
   } = useOvermind();
 
   return (
-    <div style={{ display: "flex", flex: 1 }}>
+    <div className="TrackLanes">
       <TrackLane
+        className="previous"
         key={format(addMonths(selectedDate, -1), "yyyyMM")}
         month={getMonth(addMonths(selectedDate, -1))}
         year={getYear(addMonths(selectedDate, -1))}
@@ -80,6 +82,7 @@ const TrackLanes: React.FC = () => {
         year={getYear(selectedDate)}
       />
       <TrackLane
+        className="next"
         key={format(addMonths(selectedDate, 1), "yyyyMM")}
         month={getMonth(addMonths(selectedDate, 1))}
         year={getYear(addMonths(selectedDate, 1))}

@@ -23,7 +23,7 @@ import { cap } from "./utils";
  *
  * @param fn Function to wrap, (c: Promise) => ...
  */
-const cancellable = (fn: (c: Promise<never>) => Promise<any>) => () => {
+const cancellable = (fn: (c: Promise<never>) => Promise<void>) => () => {
   let cancel: (reason: string) => void;
   const cancelPromise = new Promise<never>((_, c) => (cancel = c));
   fn(cancelPromise);
@@ -37,7 +37,6 @@ const renderPill = (tag: string, count: number, i: number) => (
   </div>
 );
 
-// const SIZE_CODES = ["XS", "S", "M", "SL", "L"];
 const ClubDayTracks: React.FC<{ clubId: string; date: Date }> = ({
   clubId,
   date,
@@ -85,9 +84,44 @@ const ClubDayTracks: React.FC<{ clubId: string; date: Date }> = ({
       return elems;
     });
 
+  const judgesCombined = Object.values(tracks)
+    .flatMap(
+      (track) =>
+        track?.trackIds.flatMap((tId) => {
+          const track = raceData.track(String(tId));
+          if (!track || !track.mainJudge) return [];
+
+          const mJ = track.mainJudge.contactDetails.name;
+          if (!track.reserveJudge) return [mJ];
+
+          const rJ = track.reserveJudge.contactDetails.name;
+          return [mJ, rJ];
+        }) ?? []
+    )
+    .reduce(
+      // Uniq
+      (acc, name) => (acc.includes(name) ? acc : [name, ...acc]),
+      [] as string[]
+    )
+    .sort()
+    .join(", ");
+
+  const race = raceData.race(
+    String(
+      raceData.track(String(Object.values(tracks)[0]?.trackIds[0]))?.raceId
+    )
+  );
+  const location =
+    race?.location.city ?? race?.location.postOffice ?? club.city;
+
   return (
     <List.Item style={{ display: "flex" }}>
-      <div style={{ flex: 1 }}>{club.abbreviation}</div>
+      <div style={{ flex: 1 }}>
+        <div style={{ fontWeight: 700 }}>
+          {club.abbreviation} ({location})
+        </div>
+        <div>{judgesCombined}</div>
+      </div>
       <div>{pills}</div>
     </List.Item>
   );

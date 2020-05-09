@@ -237,4 +237,12 @@ export class RaceDataStore {
   public club(clubId: string) {
     return this.clubs[clubId];
   }
+
+  public track(trackId: string) {
+    return this.tracks[trackId];
+  }
+
+  public race(raceId: string) {
+    return this.races[raceId];
+  }
 }

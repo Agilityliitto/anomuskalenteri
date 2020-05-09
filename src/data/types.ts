@@ -4,6 +4,7 @@ export interface Location {
   zip: string | null;
   postOffice: string | null;
   details: string;
+  city: string;
 }
 
 export interface Person {
