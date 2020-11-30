@@ -9,7 +9,6 @@
         addMonths,
     } from "date-fns";
     import { fi } from "date-fns/locale";
-    import { capitalize } from "./util";
 
     export let value: Date;
 
@@ -25,11 +24,9 @@
         start: firstMonth,
         end: lastMonth,
     }).map((d) =>
-        capitalize(
-            format(d, "LLLL", {
-                locale: fi,
-            })
-        )
+        format(d, "LLLL", {
+            locale: fi,
+        })
     );
 
     function nextMonth() {
@@ -46,7 +43,7 @@
     }
     function setMonth(month) {
         month = Number(month);
-        if(isNaN(month)) return;
+        if (isNaN(month)) return;
         value = set(value, { month });
     }
 </script>
@@ -58,6 +55,9 @@
     .base {
         display: inline-block;
     }
+    option {
+        text-transform: capitalize;
+    }
 </style>
 
 <div class="base">
@@ -67,7 +67,9 @@
         on:click={previousMonth}>&lt;</button>
     <!-- no-onchange is a deprecated rule -->
     <!-- svelte-ignore a11y-no-onchange -->
-    <select value={monthValue} on:change={(e) => setMonth(e.currentTarget.value)}>
+    <select
+        value={monthValue}
+        on:change={(e) => setMonth(e.currentTarget.value)}>
         {#each months as m, i (i)}
             <option value={i}>{m}</option>
         {/each}

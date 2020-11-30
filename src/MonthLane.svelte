@@ -3,7 +3,6 @@
     import type { DataStore } from "./interfaces";
     import DayBox from "./DayBox.svelte";
     import { fi } from "date-fns/locale";
-    import { capitalize } from "./util";
     import { dataForMonth } from "./stores";
 
     export let selectedDate: Date;
@@ -14,12 +13,13 @@
     .base {
         padding: 0 0.5rem;
     }
+    h3 {
+        text-transform: capitalize;
+    }
 </style>
 
 <div class="base">
-    <h3>
-        {capitalize(format(selectedDate, 'LLLL', { locale: fi }))}
-    </h3>
+    <h3>{format(selectedDate, 'LLLL', { locale: fi })}</h3>
     {#await p}
         <p>...</p>
     {:then data}
