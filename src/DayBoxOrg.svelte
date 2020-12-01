@@ -38,16 +38,24 @@
             ([out, acc], cl, s) => {
                 if (!cl) {
                     if (acc.length < 2) {
-                        return [[out, ...acc].join(", "), []];
-                    } else return [out?`${out}, ${acc[0]}-${acc[1]}`:`${acc[0]}-${acc[1]}`, []];
+                        return [(out ? [out, ...acc] : acc).join(", "), []];
+                    } else
+                        return [
+                            out
+                                ? `${out}, ${acc[0]}-${acc[1]}`
+                                : `${acc[0]}-${acc[1]}`,
+                            [],
+                        ];
                 }
                 if (acc.length < 2) return [out, [...acc, SIZES[s]]];
                 return [out, [acc[0], SIZES[s]]];
             },
             [, []] as [string, string[]]
         );
-        if(sizeStr) {
-            return acc.length < 2 ? [sizeStr, ...acc].join(", ") :`${sizeStr}, ${acc[0]}-${acc[1]}`;
+        if (sizeStr) {
+            return acc.length < 2
+                ? [sizeStr, ...acc].join(", ")
+                : `${sizeStr}, ${acc[0]}-${acc[1]}`;
         }
         return acc.length < 2 ? acc.join("") : `${acc[0]}-${acc[1]}`;
     });
@@ -147,7 +155,10 @@
     <div class="classes-container">
         {#each classStrings as str, i}
             {#if str}
-                <div class="class-counts">{str} <span class="level-indicator">{LEVELS[i]}</span></div>
+                <div class="class-counts">
+                    {str}
+                    <span class="level-indicator">{LEVELS[i]}</span>
+                </div>
             {/if}
         {/each}
     </div>
