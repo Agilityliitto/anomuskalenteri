@@ -1,4 +1,4 @@
-import { addMonths, format, getDaysInMonth, setDate } from "date-fns";
+import { addMonths, format, getDaysInMonth, setDate, parse } from "date-fns";
 import { derived, writable } from "svelte/store";
 import type { DataStore, EventDetailsWithState, RaceEvent } from "./interfaces";
 
@@ -33,7 +33,12 @@ const getData = async (month: Date) => {
             cache.organizers[oId] = details.organizer;
         }
         for (const track of tracks) {
-            track.date = format(new Date(track.date), "yyyyMMdd");
+            try {
+                track.date = format(parse(track.date, "yyyy-M-d", new Date()), "yyyyMMdd");
+            } catch (e) {
+                console.error(e);
+                console.error(track.date);
+            }
             cache.tracks[track.date] = cache.tracks[track.date] ?? {};
             cache.tracks[track.date][oId] = cache.tracks[track.date][oId] ?? [];
             cache.tracks[track.date][oId] = [
@@ -49,7 +54,7 @@ const getData = async (month: Date) => {
     keysCache.add(key);
 }
 
-export const dataForMonth = async (date): Promise<DataStore> => {
+export const dataForMonth = async (date: Date): Promise<DataStore> => {
     await getData(date);
     const daysInMonth = getDaysInMonth(date);
     const organizers = {};
