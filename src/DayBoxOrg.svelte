@@ -118,7 +118,7 @@
     }
     .draft .state {
         position: absolute;
-        writing-mode: sideways-lr;
+        writing-mode: vertical-lr;
         text-orientation: mixed;
         text-transform: uppercase;
         font-size: 10px;
