@@ -166,6 +166,16 @@
         grid-column: 1 / 3;
         text-align: center;
     }
+    .expand-hint button {
+        appearance: none;
+        border: 0;
+        background-color: transparent;
+    }
+    .expand-hint button:focus {
+        font-weight: 700;
+        box-shadow: 0 0 2px 2px #88f;
+        /* outline: 2px solid #88f; */
+    }
 </style>
 
 <div
@@ -220,6 +230,6 @@
         <div class="description-container">{details.description}</div>
     {/if}
     {#if !expanded && details.description}
-        <div class="expand-hint" title="Lisätietoja klikkaamalla">&hellip;</div>
+        <div class="expand-hint" title="Lisätietoja klikkaamalla"><button type="button" title="Laajenna">&hellip;</button></div>
     {/if}
 </div>
