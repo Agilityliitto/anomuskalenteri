@@ -24,7 +24,8 @@ interface Location {
 }
 interface EventDetails {
     organizer: Organizer;
-    eventName: string;
+    eventName?: string;
+    description?: string;
 }
 export interface RaceEvent {
     state: string;

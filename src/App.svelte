@@ -27,6 +27,33 @@
 			date: d,
 		}));
 	}
+
+	const districts =
+		//<option value="">Kennelpiiri (kaikki)</option>
+		[
+			{ id: 1, title: "Etelä-Hämeen Kennelpiiri ry." },
+			{ id: 2, title: "Etelä-Pohjanmaan Kennelpiiri ry." },
+			{ id: 3, title: "Helsingin Seudun Kennelpiiri ry." },
+			{ id: 4, title: "Kainuun Kennelpiiri ry." },
+			{ id: 5, title: "Keski-Pohjanmaan Kennelpiiri ry." },
+			{ id: 6, title: "Keski-Suomen Kennelpiiri ry." },
+			{ id: 7, title: "Kymenläänin Kennelpiiri ry." },
+			{ id: 8, title: "Lapin Kennelpiiri ry." },
+			{ id: 9, title: "Pohjois-Hämeen Kennelpiiri ry." },
+			{ id: 10, title: "Pohjois-Karjalan Kennelpiiri ry." },
+			{ id: 11, title: "Pohjois-Pohjanmaan Kennelpiiri ry." },
+			{ id: 12, title: "Pohjois-Savon Kennelpiiri ry." },
+			{ id: 13, title: "Salpausselän Kennelpiiri ry." },
+			{ id: 14, title: "Satakunnan Kennelpiiri ry." },
+			{ id: 15, title: "Suur-Savon Kennelpiiri ry." },
+			{ id: 16, title: "Uudenmaan Kennelpiiri ry." },
+			{
+				id: 17,
+				title: "Vaasan Kennelpiiri ry. - Vasa Kenneldistrikt rf.",
+			},
+			{ id: 18, title: "Varsinais-Suomen Kennelpiiri ry." },
+			{ id: 19, title: "Ålands Kenneldistrikt rf." },
+		];
 </script>
 
 <style>
@@ -59,30 +86,14 @@
 <main>
 	<div>
 		<MonthPicker bind:value={$selectedDate} />
-		<div><select bind:value={$districtFilter}>
-		<option value="">Kennelpiiri (kaikki)</option>
-		<option value="1">Etelä-Hämeen Kennelpiiri ry.</option>
-		<option value="2">Etelä-Pohjanmaan Kennelpiiri ry.</option>
-		<option value="3">Helsingin Seudun Kennelpiiri ry.</option>
-		<option value="4">Kainuun Kennelpiiri ry.</option>
-		<option value="5">Keski-Pohjanmaan Kennelpiiri ry.</option>
-		<option value="6">Keski-Suomen Kennelpiiri ry.</option>
-		<option value="7">Kymenläänin Kennelpiiri ry.</option>
-		<option value="8">Lapin Kennelpiiri ry.</option>
-		<option value="9">Pohjois-Hämeen Kennelpiiri ry.</option>
-		<option value="10">Pohjois-Karjalan Kennelpiiri ry.</option>
-		<option value="11">Pohjois-Pohjanmaan Kennelpiiri ry.</option>
-		<option value="12">Pohjois-Savon Kennelpiiri ry.</option>
-		<option value="13">Salpausselän Kennelpiiri ry.</option>
-		<option value="14">Satakunnan Kennelpiiri ry.</option>
-		<option value="15">Suur-Savon Kennelpiiri ry.</option>
-		<option value="16">Uudenmaan Kennelpiiri ry.</option>
-		<option value="17">
-		Vaasan Kennelpiiri ry. - Vasa Kenneldistrikt rf.
-		</option>
-		<option value="18">Varsinais-Suomen Kennelpiiri ry.</option>
-		<option value="19">Ålands Kenneldistrikt rf.</option>
-		</select></div>
+		<div class="district-picker">
+			<select bind:value={$districtFilter}>
+				<option value="">Kennelpiiri (kaikki)</option>
+				{#each districts as d}
+				<option value={d.id}>{d.title}</option>
+				{/each}
+			</select>
+		</div>
 	</div>
 	<div class="event-container">
 		{#each dates as d (d.key)}

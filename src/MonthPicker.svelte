@@ -55,7 +55,7 @@
     .base {
         display: inline-block;
     }
-    option {
+    select {
         text-transform: capitalize;
     }
 </style>

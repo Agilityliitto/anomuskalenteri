@@ -13,7 +13,8 @@
         [0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0],
     ];
-    let status = tracks[0]?.details.state;
+    let { details, location } = tracks[0];
+    let status = details?.state;
     for (const track of tracks) {
         const levelIndex = LEVELS.indexOf(track.level);
         const sizeIndex = SIZES.indexOf(track.size);
@@ -60,6 +61,8 @@
         return acc.length < 2 ? acc.join("") : `${acc[0]}-${acc[1]}`;
     });
 
+    let expanded;
+
     // const sortedTracks = tracks.sort((a, b) => {
     //     if (a.level < b.level) return -1;
     //     if (a.level > b.level) return 1;
@@ -79,10 +82,11 @@
     }
     .judges-reserve {
         font-size: 0.8rem;
+        font-style: italic;
     }
     .class-counts {
         font-size: 1rem;
-        font-weight: 200;
+        font-weight: 400;
     }
     .base {
         position: relative;
@@ -93,10 +97,12 @@
         text-align: left;
         grid-template-columns: 1fr auto;
         grid-template-areas:
-            "h h"
+            "e e"
+            "o l"
             "n c";
 
         transition: background-color 0.5s ease;
+        align-items: center;
     }
     .base:first-child {
         border-top: 0;
@@ -105,16 +111,40 @@
         background-color: #ddd;
     }
 
+    .event-container {
+        grid-area: e;
+        text-align: center;
+        padding-bottom: 0.5rem;
+
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        word-break: break-word;
+    }
     .organizer-container {
-        grid-area: h;
+        grid-area: o;
+    }
+    .location-container {
+        grid-area: l;
+        font-style: italic;
+    }
+    .location-container.location {
+        font-style: normal;
     }
     .names-container {
         grid-area: n;
     }
     .classes-container {
         grid-area: c;
-        align-items: center;
+        justify-self: right;
         margin: 0;
+    }
+    .description-container {
+        grid-column: 1 / 3;
+        font-size: 0.8rem;
+
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        word-break: break-word;
     }
     .draft .state {
         position: absolute;
@@ -132,14 +162,34 @@
     .state {
         display: none;
     }
+    .expand-hint {
+        grid-column: 1 / 3;
+        text-align: center;
+    }
 </style>
 
-<div class="base" class:draft={status !== 'SAGI_APPROVED'}>
+<div
+    class="base"
+    class:draft={status !== 'SAGI_APPROVED'}
+    on:click={() => (expanded = !expanded)}>
     <div class="state" title="Kilpailua ei ole vielä myönnetty">Varaus</div>
+
+    <div class="event-container">{#if details.eventName}
+        {details.eventName}
+    {/if}</div>
+
     <div class="organizer-container">
         <abbr title={organizer.name}>{organizer.abbr}</abbr>
-        {#if organizer.city}({organizer.city}){/if}
     </div>
+
+    <div class="location-container" class:location>
+        {#if location}
+            {location.city}
+        {:else if organizer.city}
+            <span title="Kisapaikkaa ei määritetty">{organizer.city}</span>
+        {/if}
+    </div>
+
     <div class="names-container">
         <div>
             <div class="judges-main">
@@ -147,11 +197,14 @@
                     <div>{judge}</div>
                 {/each}
             </div>
-            <div class="judges-reserve">
-                {Array.from(reserveJudges).join(', ')}
+            <div class="judges-reserve" title="Varatuomarit">
+                {#each Array.from(reserveJudges) as judge}
+                    <div>{judge}</div>
+                {/each}
             </div>
         </div>
     </div>
+
     <div class="classes-container">
         {#each classStrings as str, i}
             {#if str}
@@ -162,4 +215,11 @@
             {/if}
         {/each}
     </div>
+
+    {#if expanded && details.description}
+        <div class="description-container">{details.description}</div>
+    {/if}
+    {#if !expanded && details.description}
+        <div class="expand-hint" title="Lisätietoja klikkaamalla">&hellip;</div>
+    {/if}
 </div>
