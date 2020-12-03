@@ -146,7 +146,7 @@
         overflow-wrap: break-word;
         word-break: break-word;
     }
-    .draft .state {
+    .state {
         position: absolute;
         writing-mode: vertical-lr;
         text-orientation: mixed;
@@ -157,10 +157,12 @@
         height: 100%;
         text-align: center;
         display: block;
+    }
+    .draft {
         background-color: #eeb;
     }
-    .state {
-        display: none;
+    .pending {
+        background-color: #bee;
     }
     .expand-hint {
         grid-column: 1 / 3;
@@ -180,13 +182,17 @@
 
 <div
     class="base"
-    class:draft={status !== 'SAGI_APPROVED'}
     on:click={() => (expanded = !expanded)}>
-    <div class="state" title="Kilpailua ei ole vielä myönnetty">Varaus</div>
+    {#if status === 'CLUB_DRAFT'}
+        <div class="state draft" title="Kilpailua ei ole vielä anottu">Varaus</div>
+    {/if}
+    {#if status === 'CLUB_DONE'}
+        <div class="state pending" title="Kilpailu odottaa hyväksyntää">Odottaa</div>
+    {/if}
 
-    <div class="event-container">{#if details.eventName}
-        {details.eventName}
-    {/if}</div>
+    <div class="event-container">
+        {#if details.eventName}{details.eventName}{/if}
+    </div>
 
     <div class="organizer-container">
         <abbr title={organizer.name}>{organizer.abbr}</abbr>
@@ -230,6 +236,8 @@
         <div class="description-container">{details.description}</div>
     {/if}
     {#if !expanded && details.description}
-        <div class="expand-hint" title="Lisätietoja klikkaamalla"><button type="button" title="Laajenna">&hellip;</button></div>
+        <div class="expand-hint" title="Lisätietoja klikkaamalla">
+            <button type="button" title="Laajenna">&hellip;</button>
+        </div>
     {/if}
 </div>
