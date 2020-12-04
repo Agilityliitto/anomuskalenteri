@@ -13,11 +13,11 @@
         [oid: string]: Organizer;
     };
     let filteredData = data;
-    $: if (!!$districtFilter) {
+    $: if (!!$districtFilter.length) {
         console.log($districtFilter);
         filteredData = {};
         for (const k of Object.keys(data))
-            if (organizers[k].district === Number($districtFilter)) {
+            if ($districtFilter.some(d => organizers[k].district === d)) {
                 filteredData[k] = data[k];
             }
     } else {

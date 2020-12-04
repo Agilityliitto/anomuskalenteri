@@ -4,12 +4,12 @@
 		selectedDate,
 		previousDate,
 		nextDate,
-		districtFilter,
 	} from "./stores";
 	import MonthPicker from "./MonthPicker.svelte";
 	import { format } from "date-fns";
 	import { flip } from "svelte/animate";
 	import { fade } from "svelte/transition";
+import FilterOptions from "./FilterOptions.svelte";
 
 	/**
 	 * Maybe data like
@@ -27,33 +27,7 @@
 			date: d,
 		}));
 	}
-
-	const districts =
-		//<option value="">Kennelpiiri (kaikki)</option>
-		[
-			{ id: 1, title: "Etelä-Hämeen Kennelpiiri ry." },
-			{ id: 2, title: "Etelä-Pohjanmaan Kennelpiiri ry." },
-			{ id: 3, title: "Helsingin Seudun Kennelpiiri ry." },
-			{ id: 4, title: "Kainuun Kennelpiiri ry." },
-			{ id: 5, title: "Keski-Pohjanmaan Kennelpiiri ry." },
-			{ id: 6, title: "Keski-Suomen Kennelpiiri ry." },
-			{ id: 7, title: "Kymenläänin Kennelpiiri ry." },
-			{ id: 8, title: "Lapin Kennelpiiri ry." },
-			{ id: 9, title: "Pohjois-Hämeen Kennelpiiri ry." },
-			{ id: 10, title: "Pohjois-Karjalan Kennelpiiri ry." },
-			{ id: 11, title: "Pohjois-Pohjanmaan Kennelpiiri ry." },
-			{ id: 12, title: "Pohjois-Savon Kennelpiiri ry." },
-			{ id: 13, title: "Salpausselän Kennelpiiri ry." },
-			{ id: 14, title: "Satakunnan Kennelpiiri ry." },
-			{ id: 15, title: "Suur-Savon Kennelpiiri ry." },
-			{ id: 16, title: "Uudenmaan Kennelpiiri ry." },
-			{
-				id: 17,
-				title: "Vaasan Kennelpiiri ry. - Vasa Kenneldistrikt rf.",
-			},
-			{ id: 18, title: "Varsinais-Suomen Kennelpiiri ry." },
-			{ id: 19, title: "Ålands Kenneldistrikt rf." },
-		];
+	let showFilters;
 </script>
 
 <style>
@@ -68,32 +42,55 @@
 		grid-template-columns: 1fr 1fr 1fr;
 	}
 
+	.header {
+		display: grid;
+		grid-template-columns: 1fr minmax(350px, 1fr) 1fr;
+		align-items: center;
+	}
+
 	.event-container > div {
 		margin: 0;
 	}
+	.spanAll {
+		grid-column: 1 / 4;
+	}
 
 	@media (max-width: 640px) {
-		.event-container {
+		.header, .event-container {
 			grid-template-columns: 1fr;
 		}
 		.event-container > *:first-child,
 		.event-container > *:last-child {
 			display: none;
 		}
+		.logo {
+			display: none;
+		}
+		.spanAll {
+			grid-column: auto;
+		}
 	}
 </style>
 
 <main>
-	<div>
-		<MonthPicker bind:value={$selectedDate} />
-		<div class="district-picker">
-			<select bind:value={$districtFilter}>
-				<option value="">Kennelpiiri (kaikki)</option>
-				{#each districts as d}
-				<option value={d.id}>{d.title}</option>
-				{/each}
-			</select>
+	<div class="header">
+		<div class="logo"><img src="./favicon.png" alt="SAGI Logo"/></div>
+		
+		<div class="month-picker">
+			<MonthPicker bind:value={$selectedDate} />
 		</div>
+		
+		<div>
+			<button
+				type="button"
+				on:click={() => (showFilters = !showFilters)}
+				class="showHideButton">
+				{#if showFilters}Piilota valinnat{:else}Valitse kennelpiirit{/if}
+			</button>
+		</div>
+		<div class="spanAll">
+		<FilterOptions bind:showFilters/>
+	</div>
 	</div>
 	<div class="event-container">
 		{#each dates as d (d.key)}

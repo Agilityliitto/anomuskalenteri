@@ -4,7 +4,7 @@ import type { DataStore, EventDetailsWithState, RaceEvent } from "./interfaces";
 
 
 const url = 'https://agilityliitto.github.io/anomusdata/output'
-export const districtFilter = writable('');
+export const districtFilter = writable([]);
 export const selectedDate = writable(addMonths(new Date(), 1));
 export const previousDate = derived(selectedDate, $date => addMonths($date, -1));
 export const nextDate = derived(selectedDate, $date => addMonths($date, +1));
