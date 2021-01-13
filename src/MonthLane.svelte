@@ -15,7 +15,7 @@
     <p>...</p>
   {:then data}
     {#if Object.keys(data.tracks).length === 0}Tietoja ei saatavilla{/if}
-    {#each Object.keys(data.tracks).sort() as date, i}
+    {#each Object.keys(data.tracks).sort() as date (date)}
       <div>
         <DayBox
           date={parse(date, 'yyyyMMdd', 0)}

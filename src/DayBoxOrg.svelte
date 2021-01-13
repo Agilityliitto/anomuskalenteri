@@ -5,6 +5,8 @@
   const LEVELS = ["1", "2", "3", "X"] as const;
   const SIZES = ["XS", "S", "M", "SL", "L"] as const;
 
+  // TODO: Something is breaking the reactivity here
+  // judges, counts and details don't get updated
   const judges = new Set();
   const reserveJudges = new Set();
   const counts = [

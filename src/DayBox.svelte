@@ -14,12 +14,12 @@
   };
   let filteredData = data;
   $: if (!!$districtFilter.length) {
-    console.log($districtFilter);
     filteredData = {};
-    for (const k of Object.keys(data))
+    for (const k of Object.keys(data)) {
       if ($districtFilter.some((d) => organizers[k].district === d)) {
         filteredData[k] = data[k];
       }
+    }
   } else {
     filteredData = data;
   }
@@ -31,7 +31,7 @@
       {format(date, 'cccc dd.MM.yyyy', { locale: fi }).toLocaleUpperCase()}
     </h4>
   </div>
-  {#each Object.keys(filteredData) as oId, i}
+  {#each Object.keys(filteredData) as oId (oId)}
     <DayBoxOrg organizer={organizers[oId]} tracks={data[oId]} />
   {/each}
 </div>
