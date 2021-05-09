@@ -38,13 +38,15 @@
 
 <style>
   h4 {
-    margin: 0.5rem 0;
+    padding: 0.25rem 0;
+    margin: 0;
+    color: #44617c;
   }
   .daybox {
     margin: 0 auto 0.5rem auto;
     width: 100%;
-    border: 1px solid #ccc;
-    background-color: #eef;
+    background-color: #dce9f4;
+    filter: drop-shadow(2px 4px 2px #ccc);
   }
   .collapse {
     display: none;

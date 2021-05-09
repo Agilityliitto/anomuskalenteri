@@ -44,7 +44,7 @@
             return [(out ? [out, ...acc] : acc).join(", "), []];
           } else
             return [
-              out ? `${out}, ${acc[0]}-${acc[1]}` : `${acc[0]}-${acc[1]}`,
+              out ? `${out}, ${acc[0]}–${acc[1]}` : `${acc[0]}–${acc[1]}`,
               [],
             ];
         }
@@ -148,7 +148,9 @@
   }
   .class-counts {
     font-size: 1rem;
-    font-weight: 400;
+    font-weight: 500;
+    letter-spacing: 0.03em;
+    word-spacing: 0.02em;
   }
   .base {
     position: relative;
@@ -176,7 +178,9 @@
   .event-container {
     grid-area: e;
     text-align: center;
-    padding-bottom: 0.5rem;
+    padding-bottom: 8px;
+    font-size: 12px;
+    color: #666;
 
     word-wrap: break-word;
     overflow-wrap: break-word;
@@ -199,10 +203,12 @@
     grid-area: c;
     justify-self: right;
     margin: 0;
+    padding: 4px 0;
   }
   .description-container {
     grid-column: 1 / 3;
     font-size: 0.8rem;
+    padding: 8px 0;
 
     word-wrap: break-word;
     overflow-wrap: break-word;

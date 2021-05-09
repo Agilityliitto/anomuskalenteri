@@ -46,6 +46,12 @@
       <FilterOptions bind:showFilters />
     </div>
   </div>
+  <div class="info">
+    Muutokset jo hyväksyttyjen kisojen tietoihin eivät tällä hetkellä päivity
+    anomuskalenteriin! Katso ajantasaiset tiedot
+    <a
+      href="https://kitu.agilityliitto.fi/#/race-calendar">kilpailukalenterista.</a>
+  </div>
   <div class="event-container">
     {#each dates as d (d.key)}
       <div animate:flip={{ duration: 100 }} in:fade>
@@ -78,6 +84,12 @@
   }
   .spanAll {
     grid-column: 1 / 4;
+  }
+
+  .info {
+    background: #dce9f4;
+    padding: 8px;
+    border-radius: 4px;
   }
 
   @media (max-width: 640px) {
