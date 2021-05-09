@@ -41,14 +41,16 @@ const getData = async (month: Date) => {
             }
             cache.tracks[track.date] = cache.tracks[track.date] ?? {};
             cache.tracks[track.date][oId] = cache.tracks[track.date][oId] ?? [];
-            cache.tracks[track.date][oId] = [
-                ...cache.tracks[track.date][oId],
-                {
-                    ...track,
-                    details: details as EventDetailsWithState,
-                    location,
-                },
-            ];
+            if (!cache.tracks[track.date][oId].some(t => t.id === track.id)) {
+                cache.tracks[track.date][oId] = [
+                    ...cache.tracks[track.date][oId],
+                    {
+                        ...track,
+                        details: details as EventDetailsWithState,
+                        location,
+                    },
+                ];
+            }
         }
     };
     keysCache.add(key);
