@@ -36,11 +36,13 @@ jobs:
       # Runs a set of commands using the runners shell
       - name: Commit changes into gh-pages branch
         run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
           git stash -a -- docs/
           git fetch
           git checkout gh-pages
           rm -r docs/build
           git stash pop
-          git add docs
+          git add docs/
           git commit -m "New build `date +'%Y-%m-%d'`: `git rev-parse --short $GITHUB_SHA`"
           git push origin gh-pages
