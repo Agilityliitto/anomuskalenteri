@@ -3,5 +3,6 @@
 # Ignore everything except important files
 /*
 !/docs
+!/docs/*
 !.gitignore
 !CNAME
