@@ -18,7 +18,7 @@ const getData = async (month: Date) => {
     const key = format(month, 'yyyyMM')
     if (keysCache.has(key)) return;
 
-    const re = await fetch(`${url}/${key}.json`);
+    const re = await fetch(`${url}/${key}.json`, { cache: 'no-cache' });
     if (!re.ok) {
         console.log(`No data for ${key}`);
         return;
