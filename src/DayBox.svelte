@@ -5,6 +5,30 @@
   import { format } from "date-fns";
   import { districtFilter } from "./stores";
 
+  function filterExternalData(
+    key: string,
+    others: { [key: string]: TrackWithDetails[] }
+  ) {
+    if (+key > 0) return others[key];
+    const externalTrack = others[key][0];
+    const externalAbbr = externalTrack.details.organizer.abbr.toLowerCase();
+    for (const k of Object.keys(others)) {
+      if (k === key) continue;
+      if (
+        others[k].some(
+          (otherTrack) =>
+            otherTrack.details.organizer.abbr.toLowerCase() === externalAbbr
+        )
+      ) {
+        return;
+      }
+    }
+    return [externalTrack];
+
+    //if (t.details.state === "EXTERNAL") console.log(hasOverlap, t);
+    // return !(t.details.state === "EXTERNAL" && hasOverlap);
+  }
+
   export let date: Date;
   export let data: {
     [oid: string]: TrackWithDetails[];
@@ -17,11 +41,16 @@
     filteredData = {};
     for (const k of Object.keys(data)) {
       if ($districtFilter.some((d) => organizers[k].district === d)) {
-        filteredData[k] = data[k];
+        const withoutExternalOverlap = filterExternalData(k, data);
+        if (withoutExternalOverlap) filteredData[k] = withoutExternalOverlap;
       }
     }
   } else {
-    filteredData = data;
+    filteredData = {};
+    for (const k of Object.keys(data)) {
+      const withoutExternalOverlap = filterExternalData(k, data);
+      if (withoutExternalOverlap) filteredData[k] = withoutExternalOverlap;
+    }
   }
 </script>
 

@@ -18,6 +18,7 @@
   let { details, location } = tracks[0];
   let status = details?.state;
   for (const track of tracks) {
+    if (!track.level || !track.size) continue;
     const levelIndex = LEVELS.indexOf(track.level);
     const sizeIndex = SIZES.indexOf(track.size);
     counts[levelIndex][sizeIndex] += 1;
@@ -79,6 +80,13 @@
   {#if status === 'CLUB_DONE'}
     <div class="state pending" title="Kilpailu odottaa hyväksyntää">
       Odottaa
+    </div>
+  {/if}
+  {#if status === 'EXTERNAL'}
+    <div
+      class="state external"
+      title="Nämä tiedot eivät ole peräisin KITUsta ja tietoja ei voida varmentaa">
+      Ei KITU
     </div>
   {/if}
 
@@ -232,6 +240,10 @@
   .pending {
     background-color: #bee;
   }
+  .external {
+    background-color: rgb(235, 133, 147);
+  }
+
   .expand-hint {
     grid-column: 1 / 3;
     text-align: center;
