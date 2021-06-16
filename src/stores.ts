@@ -64,10 +64,16 @@ const getData = async (month: Date) => {
     }
   }
   keysCache.add(key);
+
+  await getExternalData(2022);
+  await getExternalData(2023);
 };
 
 let externalIndexTop = 0;
+let externalKeysCache = { 2022: false, 2023: false };
 async function getExternalData(year: number) {
+  if (externalKeysCache[year]) return;
+  externalKeysCache[year] = true;
   const re = await fetch(`${externalUrl}/${year}.json`, { cache: "no-cache" });
   if (!re.ok) {
     console.log(`No external data for ${year}`);
@@ -113,9 +119,6 @@ async function getExternalData(year: number) {
     cache.tracks[track.date][oId] = [track];
   }
 }
-
-getExternalData(2022).catch((e) => console.error(e));
-getExternalData(2023).catch((e) => console.error(e));
 
 export const dataForMonth = async (date: Date): Promise<DataStore> => {
   await getData(date);

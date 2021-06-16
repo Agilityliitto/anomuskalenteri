@@ -13,7 +13,7 @@
     const externalTrack = others[key][0];
     const externalAbbr = externalTrack.details.organizer.abbr.toLowerCase();
     for (const k of Object.keys(others)) {
-      if (k === key) continue;
+      if (+k < 0) continue;
       if (
         others[k].some(
           (otherTrack) =>
